@@ -85,8 +85,14 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                     return true;
             }
 
-
             if (inputData.shaderKeywordSet.IsEnabled(m_LightLayers) && !hdrpAsset.renderPipelineSettings.supportLightLayers)
+                return true;
+
+           
+            if (inputData.shaderKeywordSet.IsEnabled(m_WriteMSAADepth) && !hdrpAsset.renderPipelineSettings.supportMSAA)
+                return true;
+
+            if (inputData.shaderKeywordSet.IsEnabled(m_SubsurfaceScattering) && !hdrpAsset.renderPipelineSettings.supportSubsurfaceScattering)
                 return true;
 
             return false;
@@ -99,8 +105,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         List<BaseShaderPreprocessor> materialList;
 
 
-        int m_TotalVariantsInputCount;
-        int m_TotalVariantsOutputCount;
+        uint m_TotalVariantsInputCount;
+        uint m_TotalVariantsOutputCount;
 
         public HDRPreprocessShaders()
         {
@@ -112,13 +118,13 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             materialList = HDEditorUtils.GetBaseShaderPreprocessorList();
         }
 
-        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, int prevVariantsCount, int currVariantsCount)
+        void LogShaderVariants(Shader shader, ShaderSnippetData snippetData, uint prevVariantsCount, uint currVariantsCount)
         {
             // TODO: Use logging levels? 
             if (shader.name.Contains("HDRenderPipeline"))
             {
-                float percentageCurrent = ((float)currVariantsCount / (float)prevVariantsCount) * 100.0f;
-                float percentageTotal = ((float)m_TotalVariantsOutputCount / (float)m_TotalVariantsInputCount) * 100.0f;
+                float percentageCurrent = ((float)currVariantsCount / prevVariantsCount) * 100.0f;
+                float percentageTotal = ((float)m_TotalVariantsOutputCount / m_TotalVariantsInputCount) * 100.0f;
 
                 string result = string.Format("STRIPPING: {0} ({1} pass) ({2}) -" +
                         " Remaining shader variants = {3}/{4} = {5}% - Total = {6}/{7} = {8}%",
@@ -138,7 +144,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             if (hdPipelineAsset == null)
                 return;
 
-            int preStrippingCount = inputData.Count;
+            uint preStrippingCount = (uint)inputData.Count;
 
             // This test will also return if we are not using HDRenderPipelineAsset
             if (hdPipelineAsset == null || !hdPipelineAsset.allowShaderVariantStripping)
@@ -164,10 +170,13 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                     inputData.RemoveAt(i);
                     i--;
                 }
+            }
 
+      //      if(hdPipelineAsset.enableVariantStrippingLogging)
+            {
                 m_TotalVariantsInputCount += preStrippingCount;
-                m_TotalVariantsOutputCount += inputData.Count;
-                LogShaderVariants(shader, snippet, preStrippingCount, inputData.Count);
+                m_TotalVariantsOutputCount += (uint)inputData.Count;
+                LogShaderVariants(shader, snippet, preStrippingCount, (uint)inputData.Count);
             }
         }
     }

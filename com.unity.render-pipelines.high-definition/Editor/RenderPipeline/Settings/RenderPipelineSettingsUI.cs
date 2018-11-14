@@ -113,6 +113,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             EditorGUILayout.PropertyField(d.supportMotionVectors, _.GetContent("Motion Vectors|Motion vector are use for Motion Blur, TAA, temporal re-projection of various effect like SSR."));
             EditorGUILayout.PropertyField(d.supportRuntimeDebugDisplay, _.GetContent("Runtime debug display|Remove all debug display shader variant only in the player. Allow faster build."));
             EditorGUILayout.PropertyField(d.supportDitheringCrossFade, _.GetContent("Dithering cross fade|Remove all dithering cross fade shader variant only in the player. Allow faster build."));
+            EditorGUILayout.PropertyField(d.supportDistortion, _.GetContent("Distortion|Remove all distortion shader variants only in the player. Allow faster build."));
 
             // Only display the support ray tracing feature if the platform supports it
         #if REALTIME_RAYTRACING_SUPPORT

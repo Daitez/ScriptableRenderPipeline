@@ -29,6 +29,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         protected ShaderKeyword m_DirectionalMedium;
         protected ShaderKeyword m_DirectionalHigh;
         protected ShaderKeyword m_WriteNormalBuffer;
+        protected ShaderKeyword m_WriteMSAADepth;
+        protected ShaderKeyword m_SubsurfaceScattering;
 
         protected Dictionary<HDShadowQuality, ShaderKeyword> m_PunctualShadowVariants;
         protected Dictionary<HDShadowQuality, ShaderKeyword> m_DirectionalShadowVariants;
@@ -40,6 +42,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             // FOG_LINEAR, FOG_EXP, FOG_EXP2
             // STEREO_INSTANCING_ON, STEREO_MULTIVIEW_ON, STEREO_CUBEMAP_RENDER_ON, UNITY_SINGLE_PASS_STEREO
             // INSTANCING_ON
+            m_ShadowMask = new ShaderKeyword("SHADOWS_SHADOWMASK");
             m_Transparent = new ShaderKeyword("_SURFACE_TYPE_TRANSPARENT");
             m_DebugDisplay = new ShaderKeyword("DEBUG_DISPLAY");
             m_TileLighting = new ShaderKeyword("USE_FPTL_LIGHTLIST");
@@ -56,6 +59,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             m_DirectionalMedium = new ShaderKeyword("DIRECTIONAL_SHADOW_MEDIUM");
             m_DirectionalHigh = new ShaderKeyword("DIRECTIONAL_SHADOW_HIGH");
             m_WriteNormalBuffer = new ShaderKeyword("WRITE_NORMAL_BUFFER");
+            m_WriteMSAADepth = new ShaderKeyword("WRITE_MSAA_DEPTH");
+            m_SubsurfaceScattering = new ShaderKeyword("OUTPUT_SPLIT_LIGHTING");
 
             m_PunctualShadowVariants = new Dictionary<HDShadowQuality, ShaderKeyword>
             {

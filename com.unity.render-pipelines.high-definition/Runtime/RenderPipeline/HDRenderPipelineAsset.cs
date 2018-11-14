@@ -156,9 +156,11 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
         public bool allowShaderVariantStripping = true;
         public bool enableSRPBatcher = false;
+        public bool enableVariantStrippingLogging = true;   // TODO_FCC_BEFORE_PR: Expose this somewhere.
 
         [SerializeField]
         public DiffusionProfileSettings diffusionProfileSettings;
+
 
         // HDRP use GetRenderingLayerMaskNames to create its light linking system
         // Mean here we define our name for light linking.

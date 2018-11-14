@@ -17,7 +17,33 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             bool isGBufferPass = snippet.passName == "GBuffer";
             //bool isForwardPass = snippet.passName == "Forward";
             bool isDepthOnlyPass = snippet.passName == "DepthOnly";
-            bool isTransparentForwardPass = snippet.passName == "TransparentDepthPostpass" || snippet.passName == "TransparentBackface" || snippet.passName == "TransparentDepthPrepass";
+            bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
+            bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
+            bool isDistortionPass = snippet.passName == "DistortionVectors";
+            bool isTransparentForwardPass = isTransparentPostpass || snippet.passName == "TransparentBackface" || isTransparentPrepass;
+
+
+            if (isDistortionPass && !hdrpAsset.renderPipelineSettings.supportDistortion)
+                return true;
+            //// We gather information that could be spread between multiple frame settings (e.g. is transparent pre-pass supported in any frame setting?)
+            //bool isTransparentPrePassSupported = hdrpAsset.GetFrameSettings().enableTransparentPrepass                          ||
+            //                                     hdrpAsset.GetRealtimeReflectionFrameSettings().enableTransparentPrepass;
+
+            //bool isTransparentPostPassSupported = hdrpAsset.GetFrameSettings().enableTransparentPostpass                        ||
+            //                                      hdrpAsset.GetRealtimeReflectionFrameSettings().enableTransparentPostpass;
+
+            //bool isDistortionPassSupported      = hdrpAsset.GetFrameSettings().enableDistortion                                 ||
+            //                                      hdrpAsset.GetRealtimeReflectionFrameSettings().enableDistortion;
+
+            //if (isDistortionPass && !isDistortionPassSupported)
+            //    return true;
+
+            //if (isTransparentPrepass && !isTransparentPrePassSupported)
+            //    return true;
+
+            //if (isTransparentPostpass && !isTransparentPostPassSupported)
+            //    return true;
+
 
             // When using forward only, we never need GBuffer pass (only Forward)
             if (hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && isGBufferPass)
@@ -35,11 +61,9 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 if (isTransparentForwardPass)
                     return true;
 
-                // TODO: This check is disabled currently as it doesn't work. We have issue with lit VFX from VFX graph not working correctly, mean we are too agressive on
-                // removal. Need to check why.
-                // When we are in deferred (i.e !hdrpAsset.renderPipelineSettings.supportOnlyForward), we only support tile lighting
-                //if (!hdrpAsset.renderPipelineSettings.supportOnlyForward && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
-                //    return true;
+                //// When we are in deferred, we only support tile lighting
+                if (shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
+                    return true;
 
                 if (isDepthOnlyPass)
                 {

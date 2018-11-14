@@ -25,6 +25,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         public SerializedProperty supportRuntimeDebugDisplay;
         public SerializedProperty supportDitheringCrossFade;
         public SerializedProperty supportRayTracing;
+        public SerializedProperty supportDistortion;
 
         public SerializedGlobalLightLoopSettings lightLoopSettings;
         public SerializedHDShadowInitParameters hdShadowInitParams;
@@ -50,7 +51,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             supportMotionVectors            = root.Find((RenderPipelineSettings s) => s.supportMotionVectors);
             supportRuntimeDebugDisplay      = root.Find((RenderPipelineSettings s) => s.supportRuntimeDebugDisplay);
             supportDitheringCrossFade       = root.Find((RenderPipelineSettings s) => s.supportDitheringCrossFade);
-            
+            supportDistortion               = root.Find((RenderPipelineSettings s) => s.supportDistortion);
+
             supportRayTracing               = root.Find((RenderPipelineSettings s) => s.supportRayTracing);
 
             lightLoopSettings = new SerializedGlobalLightLoopSettings(root.Find((RenderPipelineSettings s) => s.lightLoopSettings));
