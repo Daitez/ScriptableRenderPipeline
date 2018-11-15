@@ -1377,6 +1377,10 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                             renderContext.StereoEndRender(camera);
                     }
 
+#if UNITY_EDITOR
+                    //Always do this for Debug.DrawLine and Debug.Ray while Editor launched
+                    if (camera.cameraType == CameraType.Game || camera.cameraType == CameraType.SceneView)
+#else
                     // Copy depth buffer if render texture has one as our depth buffer can be bigger than the one provided and we use our RT handle system.
                     // We need to copy only the corresponding portion
                     // (it's handled automatically by the copy shader because it uses a load in pixel coordinates based on the target).
@@ -1387,10 +1391,12 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                     // NOTE: This needs to be done before the call to RenderDebug because debug overlays need to update the depth for the scene view as well.
                     // Make sure RenderDebug does not change the current Render Target
                     if (copyDepth)
+#endif
                     {
                         using (new ProfilingSample(cmd, "Copy Depth in Target Texture", CustomSamplerId.CopyDepth.GetSampler()))
                         {
                             m_CopyDepth.SetTexture(HDShaderIDs._InputDepth, m_SharedRTManager.GetDepthStencilBuffer());
+                            m_CopyDepth.SetInt("_FlipY", camera.cameraType == CameraType.Game ? 1 : 0);
                             cmd.Blit(null, BuiltinRenderTextureType.CameraTarget, m_CopyDepth);
                         }
                     }
