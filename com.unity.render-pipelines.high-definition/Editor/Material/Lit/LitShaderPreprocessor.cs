@@ -39,6 +39,10 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 // If transparent, we never need GBuffer pass.
                 if (isGBufferPass)
                     return true;
+
+                // If transparent we don't need the depth only pass
+                if (isDepthOnlyPass)
+                    return true;
             }
             else // Opaque
             {
@@ -46,8 +50,12 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 if (isTransparentForwardPass)
                     return true;
 
-                //// When we are in deferred, we only support tile lighting
+                // When we are in deferred, we only support tile lighting
                 if (shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
+                    return true;
+
+                // If we use deferred only, MSAA is not supported.
+                if (shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly && inputData.shaderKeywordSet.IsEnabled(m_WriteMSAADepth))
                     return true;
 
                 if (isDepthOnlyPass)
