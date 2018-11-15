@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-using UnityEditor.Experimental.UIElements.GraphView;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Graphing;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
-#if UNITY_2018_3_OR_NEWER
-using ContextualMenu = UnityEngine.Experimental.UIElements.DropdownMenu;
-#endif
+using UnityEngine.UIElements;
+using ContextualMenuManipulator = UnityEngine.UIElements.ContextualMenuManipulator;
+using ContextualMenuPopulateEvent = UnityEngine.UIElements.ContextualMenuPopulateEvent;
+using VisualElementExtensions = UnityEngine.UIElements.VisualElementExtensions;
 
 namespace UnityEditor.ShaderGraph
 {
@@ -20,18 +20,18 @@ namespace UnityEditor.ShaderGraph
 
         public ShaderGroup()
         {
-            this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
+            VisualElementExtensions.AddManipulator(this, new ContextualMenuManipulator(BuildContextualMenu));
         }
 
         public void BuildContextualMenu(ContextualMenuPopulateEvent evt)
         {
             if (evt.target is ShaderGroup)
             {
-                evt.menu.AppendAction("Ungroup All Nodes", RemoveNodesInsideGroup, ContextualMenu.MenuAction.AlwaysEnabled);
+                evt.menu.AppendAction("Ungroup All Nodes", RemoveNodesInsideGroup, DropdownMenuAction.AlwaysEnabled);
             }
         }
 
-        void RemoveNodesInsideGroup(ContextualMenu.MenuAction obj)
+        void RemoveNodesInsideGroup(DropdownMenuAction action)
         {
             var elements = containedElements.ToList();
             foreach (GraphElement element in elements)
