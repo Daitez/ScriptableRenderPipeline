@@ -133,6 +133,14 @@ namespace UnityEditor.ShaderGraph
         }
 
         [NonSerialized]
+        List<GroupData> m_PastedGroups = new List<GroupData>();
+
+        public IEnumerable<GroupData> pastedGroups
+        {
+            get { return m_PastedGroups; }
+        }
+
+        [NonSerialized]
         List<NodeGroupChange> m_NodeGroupChanges = new List<NodeGroupChange>();
 
         public IEnumerable<NodeGroupChange> nodeGroupChanges
@@ -227,6 +235,7 @@ namespace UnityEditor.ShaderGraph
             m_NodeGroupChanges.Clear();
             m_AddedGroups.Clear();
             m_RemovedGroups.Clear();
+            m_PastedGroups.Clear();
             m_AddedEdges.Clear();
             m_RemovedEdges.Clear();
             m_AddedProperties.Clear();
@@ -756,6 +765,23 @@ namespace UnityEditor.ShaderGraph
 
         internal void PasteGraph(CopyPasteGraph graphToPaste, List<INode> remappedNodes, List<IEdge> remappedEdges)
         {
+            var groupGuidMap = new Dictionary<Guid, Guid>();
+            foreach (var group in graphToPaste.groups)
+            {
+                var position = group.position;
+                position.x += 30;
+                position.y += 30;
+
+                GroupData newGroup = new GroupData(group.title, position);
+
+                var oldGuid = group.guid;
+                var newGuid = newGroup.guid;
+                groupGuidMap[oldGuid] = newGuid;
+
+                AddGroupData(newGroup);
+                m_PastedGroups.Add(newGroup);
+            }
+
             var nodeGuidMap = new Dictionary<Guid, Guid>();
             foreach (var node in graphToPaste.GetNodes<INode>())
             {
@@ -783,6 +809,15 @@ namespace UnityEditor.ShaderGraph
                             nodeGuidMap[oldGuid] = pastedNode.guid;
                         }
                     }
+                }
+
+                AbstractMaterialNode abstractMaterialNode = (AbstractMaterialNode)node;
+                // Check if the node is inside a group
+                if (groupGuidMap.ContainsKey(abstractMaterialNode.groupGuid))
+                {
+                    var absNode = pastedNode as AbstractMaterialNode;
+                    absNode.groupGuid = groupGuidMap[abstractMaterialNode.groupGuid];
+                    pastedNode = absNode;
                 }
 
                 var drawState = node.drawState;

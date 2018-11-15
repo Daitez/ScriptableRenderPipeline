@@ -303,6 +303,7 @@ namespace UnityEditor.ShaderGraph.Drawing
 
         string SerializeGraphElementsImplementation(IEnumerable<GraphElement> elements)
         {
+            var groups = elements.OfType<ShaderGroup>().Select(x => x.userData);
             var nodes = elements.OfType<MaterialNodeView>().Select(x => (INode)x.node);
             var edges = elements.OfType<Edge>().Select(x => x.userData).OfType<IEdge>();
             var properties = selection.OfType<BlackboardField>().Select(x => x.userData as IShaderProperty);
@@ -311,7 +312,7 @@ namespace UnityEditor.ShaderGraph.Drawing
             var propertyNodeGuids = nodes.OfType<PropertyNode>().Select(x => x.propertyGuid);
             var metaProperties = this.graph.properties.Where(x => propertyNodeGuids.Contains(x.guid));
 
-            var graph = new CopyPasteGraph(this.graph.guid, nodes, edges, properties, metaProperties);
+            var graph = new CopyPasteGraph(this.graph.guid, groups, nodes, edges, properties, metaProperties);
             return JsonUtility.ToJson(graph, true);
         }
 

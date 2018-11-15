@@ -435,6 +435,12 @@ namespace UnityEditor.ShaderGraph.Drawing
                 m_GraphView.AddToSelection(nodeView);
             }
 
+            foreach (var groupData in m_Graph.pastedGroups)
+            {
+                var group = m_GraphView.graphElements.ToList().OfType<ShaderGroup>().ToList().First(g => g.userData == groupData);
+                m_GraphView.AddToSelection(group);
+            }
+
             var nodesToUpdate = m_NodeViewHashSet;
             nodesToUpdate.Clear();
 
