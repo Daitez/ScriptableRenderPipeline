@@ -15,7 +15,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         public override bool ShadersStripper(HDRenderPipelineAsset hdrpAsset, Shader shader, ShaderSnippetData snippet, ShaderCompilerData inputData)
         {
             bool isGBufferPass = snippet.passName == "GBuffer";
-            //bool isForwardPass = snippet.passName == "Forward";
+            bool isForwardPass = snippet.passName == "Forward";
             bool isDepthOnlyPass = snippet.passName == "DepthOnly";
             bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
             bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
@@ -50,13 +50,21 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 if (isTransparentForwardPass)
                     return true;
 
-                // When we are in deferred, we only support tile lighting
-                if (shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
-                    return true;
+                // If Lit uses deferred only
+                if(shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly)
+                {
+                    // When we are in deferred, we only support tile lighting
+                    if (inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
+                        return true;
 
-                // If we use deferred only, MSAA is not supported.
-                if (shader.name.Contains("Lit") && hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.DeferredOnly && inputData.shaderKeywordSet.IsEnabled(m_WriteMSAADepth))
-                    return true;
+                    // If we use deferred only, MSAA is not supported.
+                    if (inputData.shaderKeywordSet.IsEnabled(m_WriteMSAADepth))
+                        return true;
+
+                    if (isForwardPass)
+                        return true;
+
+                }
 
                 if (isDepthOnlyPass)
                 {
