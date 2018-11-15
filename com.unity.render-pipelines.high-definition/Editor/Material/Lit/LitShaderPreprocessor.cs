@@ -19,31 +19,16 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             bool isDepthOnlyPass = snippet.passName == "DepthOnly";
             bool isTransparentPrepass = snippet.passName == "TransparentDepthPrepass";
             bool isTransparentPostpass = snippet.passName == "TransparentDepthPostpass";
+            bool isTransparentBackface = snippet.passName == "TransparentBackface";
             bool isDistortionPass = snippet.passName == "DistortionVectors";
-            bool isTransparentForwardPass = isTransparentPostpass || snippet.passName == "TransparentBackface" || isTransparentPrepass;
+            bool isTransparentForwardPass = isTransparentPostpass || isTransparentBackface || isTransparentPrepass;
 
 
             if (isDistortionPass && !hdrpAsset.renderPipelineSettings.supportDistortion)
                 return true;
-            //// We gather information that could be spread between multiple frame settings (e.g. is transparent pre-pass supported in any frame setting?)
-            //bool isTransparentPrePassSupported = hdrpAsset.GetFrameSettings().enableTransparentPrepass                          ||
-            //                                     hdrpAsset.GetRealtimeReflectionFrameSettings().enableTransparentPrepass;
 
-            //bool isTransparentPostPassSupported = hdrpAsset.GetFrameSettings().enableTransparentPostpass                        ||
-            //                                      hdrpAsset.GetRealtimeReflectionFrameSettings().enableTransparentPostpass;
-
-            //bool isDistortionPassSupported      = hdrpAsset.GetFrameSettings().enableDistortion                                 ||
-            //                                      hdrpAsset.GetRealtimeReflectionFrameSettings().enableDistortion;
-
-            //if (isDistortionPass && !isDistortionPassSupported)
-            //    return true;
-
-            //if (isTransparentPrepass && !isTransparentPrePassSupported)
-            //    return true;
-
-            //if (isTransparentPostpass && !isTransparentPostPassSupported)
-            //    return true;
-
+            if (isTransparentBackface && !hdrpAsset.renderPipelineSettings.supportTransparentBackface)
+                return true;
 
             // When using forward only, we never need GBuffer pass (only Forward)
             if (hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && isGBufferPass)
