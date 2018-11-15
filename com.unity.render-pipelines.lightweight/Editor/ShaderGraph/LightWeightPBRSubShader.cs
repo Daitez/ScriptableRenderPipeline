@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using UnityEditor.Graphing;
 using UnityEditor.ShaderGraph;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.LightweightPipeline;
+using UnityEngine.Rendering;
 
 namespace UnityEditor.Experimental.Rendering.LightweightPipeline
 {
     [Serializable]
     [FormerName("UnityEditor.ShaderGraph.LightWeightPBRSubShader")]
-    public class LightWeightPBRSubShader : IPBRSubShader
+    class LightWeightPBRSubShader : IPBRSubShader
     {
         static readonly NeededCoordinateSpace k_PixelCoordinateSpace = NeededCoordinateSpace.World;
 
@@ -67,6 +67,8 @@ namespace UnityEditor.Experimental.Rendering.LightweightPipeline
             Name = "",
             PixelShaderSlots = new List<int>()
             {
+                PBRMasterNode.AlbedoSlotId,
+                PBRMasterNode.EmissionSlotId,
                 PBRMasterNode.AlphaSlotId,
                 PBRMasterNode.AlphaThresholdSlotId
             },
@@ -106,11 +108,12 @@ namespace UnityEditor.Experimental.Rendering.LightweightPipeline
             {
                 subShader.AppendLine("Tags{ \"RenderPipeline\" = \"LightweightPipeline\"}");
 
-                var materialOptions = ShaderGenerator.GetMaterialOptions(pbrMasterNode.surfaceType, pbrMasterNode.alphaMode, pbrMasterNode.twoSided.isOn);
+                var materialTags = ShaderGenerator.BuildMaterialTags(pbrMasterNode.surfaceType);
                 var tagsBuilder = new ShaderStringBuilder(0);
-                materialOptions.GetTags(tagsBuilder);
+                materialTags.GetTags(tagsBuilder);
                 subShader.AppendLines(tagsBuilder.ToString());
 
+                var materialOptions = ShaderGenerator.GetMaterialOptions(pbrMasterNode.surfaceType, pbrMasterNode.alphaMode, pbrMasterNode.twoSided.isOn);
                 subShader.AppendLines(GetShaderPassFromTemplate(
                         forwardTemplate,
                         pbrMasterNode,
@@ -125,20 +128,21 @@ namespace UnityEditor.Experimental.Rendering.LightweightPipeline
                         mode,
                         materialOptions));
             }
+            subShader.Append("CustomEditor \"UnityEditor.ShaderGraph.PBRMasterGUI\"");
 
             return subShader.ToString();
         }
 
         public bool IsPipelineCompatible(RenderPipelineAsset renderPipelineAsset)
         {
-            return renderPipelineAsset is LightweightPipelineAsset;
+            return renderPipelineAsset is LightweightRenderPipelineAsset;
         }
 
         static string GetTemplatePath(string templateName)
         {
             var basePath = Path.GetFullPath("Packages/com.unity.render-pipelines.lightweight/Editor/ShaderGraph");
             string templatePath = Path.Combine(basePath, templateName);
-            
+
             if (File.Exists(templatePath))
                 return templatePath;
 

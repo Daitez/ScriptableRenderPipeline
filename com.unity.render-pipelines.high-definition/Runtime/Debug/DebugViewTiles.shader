@@ -28,13 +28,17 @@ Shader "Hidden/HDRenderPipeline/DebugViewTiles"
 
             #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
 
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/Lighting.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Material.hlsl"
+
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Debug/DebugDisplay.hlsl"
+
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/LightLoopDef.hlsl"
             // Note: We have fix as guidelines that we have only one deferred material (with control of GBuffer enabled). Mean a users that add a new
             // deferred material must replace the old one here. If in the future we want to support multiple layout (cause a lot of consistency problem),
             // the deferred shader will require to use multicompile.
-            #define UNITY_MATERIAL_LIT // Need to be define before including Material.hlsl
-            #include "../ShaderVariables.hlsl"
-            #include "../Lighting/Lighting.hlsl" // This include Material.hlsl
-            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Debug/DebugDisplay.hlsl"
+            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/Material/Lit/Lit.hlsl"
 
             //-------------------------------------------------------------------------------------
             // variable declaration
@@ -78,7 +82,10 @@ Shader "Hidden/HDRenderPipeline/DebugViewTiles"
                 uint2 pixelCoord = (tileCoord + uint2((quadVertex+1) & 1, (quadVertex >> 1) & 1)) * tileSize;
 
                 float2 clipCoord = (pixelCoord * _ScreenSize.zw) * 2.0 - 1.0;
-                clipCoord.y *= -1;
+                if (!ShouldFlipDebugTexture()) // Need to do this negative test to have it work correctly on windows in scene view and game view
+                {
+                    clipCoord.y *= -1;
+                }
 
                 Varyings output;
                 output.positionCS = float4(clipCoord, 0, 1.0);

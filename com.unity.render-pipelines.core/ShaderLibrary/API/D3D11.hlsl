@@ -6,12 +6,16 @@
 // This value will not go through any matrix projection conversion
 #define UNITY_RAW_FAR_CLIP_VALUE (0.0)
 #define VERTEXID_SEMANTIC SV_VertexID
+#define INSTANCEID_SEMANTIC SV_InstanceID
 #define FRONT_FACE_SEMANTIC SV_IsFrontFace
 #define FRONT_FACE_TYPE bool
 #define IS_FRONT_VFACE(VAL, FRONT, BACK) ((VAL) ? (FRONT) : (BACK))
 
 #define CBUFFER_START(name) cbuffer name {
 #define CBUFFER_END };
+
+#define PLATFORM_SUPPORTS_EXPLICIT_BINDING 1
+#define PLATFORM_NEEDS_UNORM_UAV_SPECIFIER 1
 
 // flow control attributes
 #define UNITY_BRANCH        [branch]

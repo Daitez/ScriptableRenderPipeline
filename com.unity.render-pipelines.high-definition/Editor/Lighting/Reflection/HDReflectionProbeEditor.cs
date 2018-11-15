@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 using System.Linq;
-using UnityEngine.Rendering;
+using UnityEditor.Rendering;
 
 namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
@@ -59,7 +59,9 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 
         protected override void Draw(HDProbeUI s, SerializedHDProbe serialized, Editor owner)
         {
+#pragma warning disable 612 //Draw
             HDReflectionProbeUI.Inspector.Draw(s, serialized, owner);
+#pragma warning restore 612
         }
 
         static HDReflectionProbeEditor GetEditorFor(ReflectionProbe p)
@@ -75,7 +77,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         }
         
         SerializedObject m_AdditionalDataSerializedObject;
-        internal HDReflectionProbeUI m_UIState = new HDReflectionProbeUI();
 
         public bool sceneViewEditing
         {
@@ -95,16 +96,13 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             }
 
             base.OnEnable();
-
-            m_UIState.owner = this;
-            m_UIState.Reset(m_SerializedHDProbe, Repaint);
             
             InitializeTargetProbe();
 
             HDAdditionalReflectionData probe = (HDAdditionalReflectionData)m_AdditionalDataSerializedObject.targetObject;
             probe.influenceVolume.Init(probe);
 
-            //unhide previously hidden components
+            //unhide previously hidden components if any
             probe.hideFlags = HideFlags.None;
         }
     }

@@ -6,7 +6,7 @@ using UnityEditor.ShaderGraph.Drawing.Controls;
 namespace UnityEditor.ShaderGraph
 {    
     [Title("Input", "Texture", "Sample Texture 2D LOD")]
-    public class SampleTexture2DLODNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequireMeshUV
+    class SampleTexture2DLODNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequireMeshUV
     {
         public const int OutputSlotRGBAId = 0;
         public const int OutputSlotRId = 5;
@@ -60,6 +60,23 @@ namespace UnityEditor.ShaderGraph
             }
         }
 
+        [SerializeField]
+        private NormalMapSpace m_NormalMapSpace = NormalMapSpace.Tangent;
+
+        [EnumControl("Space")]
+        public NormalMapSpace normalMapSpace
+        {
+            get { return m_NormalMapSpace; }
+            set
+            {
+                if (m_NormalMapSpace == value)
+                    return;
+
+                m_NormalMapSpace = value;
+                Dirty(ModificationScope.Graph);
+            }
+        }
+
         public sealed override void UpdateNodeAfterDeserialization()
         {
             AddSlot(new Vector4MaterialSlot(OutputSlotRGBAId, kOutputSlotRGBAName, kOutputSlotRGBAName, SlotType.Output, Vector4.zero, ShaderStageCapability.All));
@@ -106,7 +123,16 @@ namespace UnityEditor.ShaderGraph
             visitor.AddShaderChunk(result, true);
 
             if (textureType == TextureType.Normal)
-                visitor.AddShaderChunk(string.Format("{0}.rgb = UnpackNormalmapRGorAG({0});", GetVariableNameForSlot(OutputSlotRGBAId)), true);
+            {
+                if (normalMapSpace == NormalMapSpace.Tangent)
+                {
+                    visitor.AddShaderChunk(string.Format("{0}.rgb = UnpackNormalmapRGorAG({0});", GetVariableNameForSlot(OutputSlotRGBAId)), true);
+                }
+                else
+                {
+                    visitor.AddShaderChunk(string.Format("{0}.rgb = UnpackNormalRGB({0});", GetVariableNameForSlot(OutputSlotRGBAId)), true);
+                }
+            }
 
             visitor.AddShaderChunk(string.Format("{0} {1} = {2}.r;", precision, GetVariableNameForSlot(OutputSlotRId), GetVariableNameForSlot(OutputSlotRGBAId)), true);
             visitor.AddShaderChunk(string.Format("{0} {1} = {2}.g;", precision, GetVariableNameForSlot(OutputSlotGId), GetVariableNameForSlot(OutputSlotRGBAId)), true);

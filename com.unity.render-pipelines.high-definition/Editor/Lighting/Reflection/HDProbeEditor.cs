@@ -1,9 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor.Callbacks;
-using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 using Object = UnityEngine.Object;
 
@@ -21,7 +16,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         internal abstract HDProbe GetTarget(Object editorTarget);
 
         protected SerializedHDProbe m_SerializedHDProbe;
-        HDProbeUI m_UIState;
+        internal HDProbeUI m_UIState;
         HDProbeUI[] m_UIHandleState;
         protected HDProbe[] m_TypedTargets;
 

@@ -9,7 +9,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
     /// You can use this pass to prime a depth buffer for subsequent rendering.
     /// Use it as a z-prepass, or use it to generate a depth buffer.
     /// </summary>
-    public class DepthOnlyPass : ScriptableRenderPass
+    internal class DepthOnlyPass : ScriptableRenderPass
     {
         const string k_DepthPrepassTag = "Depth Prepass";
 
@@ -17,7 +17,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
 
         private RenderTargetHandle depthAttachmentHandle { get; set; }
         internal RenderTextureDescriptor descriptor { get; private set; }
-        private FilterRenderersSettings opaqueFilterSettings { get; set; }
+        private FilteringSettings opaqueFilterSettings { get; set; }
 
         /// <summary>
         /// Create the DepthOnlyPass
@@ -25,10 +25,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
         public DepthOnlyPass()
         {
             RegisterShaderPassName("DepthOnly");
-            opaqueFilterSettings = new FilterRenderersSettings(true)
-            {
-                renderQueueRange = RenderQueueRange.opaque,
-            };
+            opaqueFilterSettings = new FilteringSettings(RenderQueueRange.opaque);
         }
         
         /// <summary>
@@ -45,7 +42,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
 
             if ((int)samples > 1)
             {
-                baseDescriptor.bindMS = (int)samples > 1;
+                baseDescriptor.bindMS = false;
                 baseDescriptor.msaaSamples = (int)samples;
             }
 
@@ -75,16 +72,18 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
                 cmd.Clear();
 
                 var sortFlags = renderingData.cameraData.defaultOpaqueSortFlags;
-                var drawSettings = CreateDrawRendererSettings(renderingData.cameraData.camera, sortFlags, RendererConfiguration.None, renderingData.supportsDynamicBatching);
+                var drawSettings = CreateDrawingSettings(renderingData.cameraData.camera, sortFlags, PerObjectData.None, renderingData.supportsDynamicBatching);
+                var filteringSettings = opaqueFilterSettings;
+                
                 if (renderingData.cameraData.isStereoEnabled)
                 {
                     Camera camera = renderingData.cameraData.camera;
                     context.StartMultiEye(camera);
-                    context.DrawRenderers(renderingData.cullResults.visibleRenderers, ref drawSettings, opaqueFilterSettings);
+                    context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filteringSettings);
                     context.StopMultiEye(camera);
                 }
                 else
-                    context.DrawRenderers(renderingData.cullResults.visibleRenderers, ref drawSettings, opaqueFilterSettings);
+                    context.DrawRenderers(renderingData.cullResults, ref drawSettings, ref filteringSettings);
             }
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);

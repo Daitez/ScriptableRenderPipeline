@@ -53,7 +53,9 @@
     #ifdef ATTRIBUTES_NEED_COLOR
     #define VARYINGS_NEED_COLOR
     #endif
+#elif defined(LOD_FADE_CROSSFADE)
+    #define VARYINGS_NEED_POSITION_WS // Required to get view vector use in cross fade effect 
 #endif
 
 // This include will define the various Attributes/Varyings structure
-#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderPass/VaryingMesh.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VaryingMesh.hlsl"

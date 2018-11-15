@@ -12,15 +12,16 @@
 
 #pragma kernel ClearAtomic
 
+// #pragma enable_d3d11_debug_symbols
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
-#include "ShaderBase.hlsl"
-#include "LightLoop.cs.hlsl"
-#include "LightingConvexHullUtils.hlsl"
-#include "LightCullUtils.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/ShaderBase.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/LightLoop.cs.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/LightingConvexHullUtils.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/LightCullUtils.hlsl"
 
 #if !defined(SHADER_API_XBOXONE) && !defined(SHADER_API_PSSL)
-#include "SortingComputeUtils.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightLoop/SortingComputeUtils.hlsl"
 #endif
 
 #pragma only_renderers d3d11 ps4 xboxone vulkan metal switch
@@ -300,7 +301,7 @@ void LIGHTLISTGEN(uint threadID : SV_GroupIndex, uint3 u3GroupID : SV_GroupID)
 
     // build coarse list using AABB
 #ifdef USE_TWO_PASS_TILED_LIGHTING
-    const uint log2BigTileToClustTileRatio = firstbithigh(64) - log2TileSize;
+    const uint log2BigTileToClustTileRatio = firstbithigh(TILE_SIZE_BIG_TILE) - log2TileSize;
 
     int NrBigTilesX = (nrTilesX + ((1<<log2BigTileToClustTileRatio)-1)) >> log2BigTileToClustTileRatio;
     int NrBigTilesY = (nrTilesY + ((1<<log2BigTileToClustTileRatio)-1)) >> log2BigTileToClustTileRatio;

@@ -24,7 +24,7 @@
 #define SSS_DEBUG_NORMAL_VS   0
 
 // Do not modify these.
-#include "../../ShaderPass/ShaderPass.cs.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/ShaderPass.cs.hlsl"
 #define SHADERPASS            SHADERPASS_SUBSURFACE_SCATTERING
 #define GROUP_SIZE_1D         16
 #define GROUP_SIZE_2D         (GROUP_SIZE_1D * GROUP_SIZE_1D)
@@ -46,8 +46,8 @@
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Packing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Sampling/Sampling.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceFillingCurves.hlsl"
-#include "../../ShaderVariables.hlsl"
-#include "../../Lighting/LightDefinition.cs.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+#include "Packages/com.unity.render-pipelines.high-definition/Runtime/Lighting/LightDefinition.cs.hlsl"
 #include "SubsurfaceScattering.hlsl"
 
 
@@ -235,7 +235,7 @@ void SubsurfaceScattering(uint2 groupId       : SV_GroupID,
     groupThreadId &= GROUP_SIZE_2D - 1; // Help the compiler
 
     // Note: any factor of 64 is a suitable wave size for our algorithm.
-    uint waveIndex = WaveReadFirstLane(groupThreadId / 64);
+    uint waveIndex = WaveReadLaneFirst(groupThreadId / 64);
     uint laneIndex = groupThreadId % 64;
     uint quadIndex = laneIndex / 4;
 

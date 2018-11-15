@@ -1,15 +1,16 @@
 using System;
 using System.Reflection;
-using UnityEditor.Experimental.UIElements;
 using UnityEngine;
-using UnityEngine.Experimental.UIElements;
 using UnityEditor.Graphing;
 using System.Globalization;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+
 
 namespace UnityEditor.ShaderGraph.Drawing.Controls
 {
     [AttributeUsage(AttributeTargets.Property)]
-    public class SliderControlAttribute : Attribute, IControlAttribute
+    class SliderControlAttribute : Attribute, IControlAttribute
     {
         string m_Label;
         bool m_DisplayMinMax;
@@ -26,7 +27,7 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
         }
     }
 
-    public class SliderControlView : VisualElement, INodeModificationListener
+    class SliderControlView : VisualElement, INodeModificationListener
     {
         AbstractMaterialNode m_Node;
         PropertyInfo m_PropertyInfo;
@@ -42,7 +43,7 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
         {
             m_Node = node;
             m_PropertyInfo = propertyInfo;
-            AddStyleSheetPath("Styles/Controls/SliderControlView");
+            styleSheets.Add(Resources.Load<StyleSheet>("Styles/Controls/SliderControlView"));
             m_DisplayMinMax = displayMinMax;
 
             if (propertyInfo.PropertyType != typeof(Vector3))
@@ -53,8 +54,9 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
             m_SliderPanel = new VisualElement { name = "SliderPanel" };
             if (!string.IsNullOrEmpty(label))
                 m_SliderPanel.Add(new Label(label));
-            Action<float> changedSlider = (s) => { OnChangeSlider(s); };
-            m_Slider = new Slider(m_Value.y, m_Value.z, changedSlider);
+            m_Slider = new Slider(m_Value.y, m_Value.z);
+            m_Slider.RegisterValueChangedCallback((evt) => OnChangeSlider(evt.newValue));
+
             m_Slider.value = m_Value.x;
             m_SliderPanel.Add(m_Slider);
             m_SliderInput = AddField(m_SliderPanel, "", 0, m_Value);
@@ -102,16 +104,15 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
 
             field.RegisterCallback<MouseDownEvent>(Repaint);
             field.RegisterCallback<MouseMoveEvent>(Repaint);
-            field.OnValueChanged(evt =>
+            field.RegisterValueChangedCallback(evt =>
                 {
                     var value = (Vector3)m_PropertyInfo.GetValue(m_Node, null);
                     value[index] = (float)evt.newValue;
                     m_PropertyInfo.SetValue(m_Node, value, null);
                     m_UndoGroup = -1;
-                    UpdateSlider(m_SliderPanel, index, value);
                     this.MarkDirtyRepaint();
                 });
-            field.RegisterCallback<InputEvent>(evt =>
+            field.Q("unity-text-input").RegisterCallback<InputEvent>(evt =>
                 {
                     if (m_UndoGroup == -1)
                     {
@@ -124,9 +125,13 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
                     var value = (Vector3)m_PropertyInfo.GetValue(m_Node, null);
                     value[index] = newValue;
                     m_PropertyInfo.SetValue(m_Node, value, null);
+                    if(evt.newData.Length != 0 
+                        && evt.newData[evt.newData.Length-1] != '.' 
+                        && evt.newData[evt.newData.Length-1] != ',')
+                        UpdateSlider(m_SliderPanel, index, value);
                     this.MarkDirtyRepaint();
                 });
-            field.RegisterCallback<KeyDownEvent>(evt =>
+            field.Q("unity-text-input").RegisterCallback<KeyDownEvent>(evt =>
                 {
                     if (evt.keyCode == KeyCode.Escape && m_UndoGroup > -1)
                     {
@@ -146,8 +151,9 @@ namespace UnityEditor.ShaderGraph.Drawing.Controls
         {
             value.x = Mathf.Max(Mathf.Min(value.x, value.z), value.y);
             panel.Remove(m_Slider);
-            Action<float> changedSlider = (s) => { OnChangeSlider(s); };
-            m_Slider = new Slider(value.y, value.z, changedSlider);
+            m_Slider = new Slider(value.y, value.z);
+            m_Slider.RegisterValueChangedCallback((evt) => OnChangeSlider(evt.newValue));
+
             m_Slider.lowValue = value.y;
             m_Slider.highValue = value.z;
             m_Slider.value = value.x;

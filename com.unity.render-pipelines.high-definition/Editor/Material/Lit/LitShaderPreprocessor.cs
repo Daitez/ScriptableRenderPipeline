@@ -1,34 +1,22 @@
-using System;
-using System.Collections.Generic;
-using UnityEditor.Build;
 using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 
 namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
     public class LitShaderPreprocessor : BaseShaderPreprocessor
     {
-        protected ShaderKeyword m_WriteNormalBuffer;
+        public LitShaderPreprocessor() {}
 
-        public LitShaderPreprocessor()
+        public override bool ShadersStripper(HDRenderPipelineAsset hdrpAsset, Shader shader, ShaderSnippetData snippet, ShaderCompilerData inputData)
         {
-            m_WriteNormalBuffer = new ShaderKeyword("WRITE_NORMAL_BUFFER");
-        }
-
-        bool LitShaderStripper(HDRenderPipelineAsset hdrpAsset, Shader shader, ShaderSnippetData snippet, ShaderCompilerData inputData)
-        {
-            if (CommonShaderStripper(hdrpAsset, shader, snippet, inputData))
-                return true;
-
             bool isGBufferPass = snippet.passName == "GBuffer";
             //bool isForwardPass = snippet.passName == "Forward";
             bool isDepthOnlyPass = snippet.passName == "DepthOnly";
             bool isTransparentForwardPass = snippet.passName == "TransparentDepthPostpass" || snippet.passName == "TransparentBackface" || snippet.passName == "TransparentDepthPrepass";
 
             // When using forward only, we never need GBuffer pass (only Forward)
-            if (hdrpAsset.renderPipelineSettings.supportOnlyForward && isGBufferPass)
+            if (hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && isGBufferPass)
                 return true;
 
             if (inputData.shaderKeywordSet.IsEnabled(m_Transparent))
@@ -43,14 +31,16 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 if (isTransparentForwardPass)
                     return true;
 
+                // TODO: This check is disabled currently as it doesn't work. We have issue with lit VFX from VFX graph not working correctly, mean we are too agressive on
+                // removal. Need to check why.
                 // When we are in deferred (i.e !hdrpAsset.renderPipelineSettings.supportOnlyForward), we only support tile lighting
-                if (!hdrpAsset.renderPipelineSettings.supportOnlyForward && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
-                    return true;
+                //if (!hdrpAsset.renderPipelineSettings.supportOnlyForward && inputData.shaderKeywordSet.IsEnabled(m_ClusterLighting))
+                //    return true;
 
                 if (isDepthOnlyPass)
                 {
                     // When we are full forward, we don't have depth prepass without writeNormalBuffer
-                    if (hdrpAsset.renderPipelineSettings.supportOnlyForward && !inputData.shaderKeywordSet.IsEnabled(m_WriteNormalBuffer))
+                    if (hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && !inputData.shaderKeywordSet.IsEnabled(m_WriteNormalBuffer))
                         return true;
                 }
 
@@ -72,17 +62,6 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             //    return true;
 
             return false;
-        }
-
-        public override void AddStripperFuncs(Dictionary<string, VariantStrippingFunc> stripperFuncs)
-        {
-            // Add name of the shader and corresponding delegate to call to strip variant
-            stripperFuncs.Add("HDRenderPipeline/Lit", LitShaderStripper);
-            stripperFuncs.Add("HDRenderPipeline/LitTessellation", LitShaderStripper);
-            stripperFuncs.Add("HDRenderPipeline/LayeredLit", LitShaderStripper);
-            stripperFuncs.Add("HDRenderPipeline/LayeredLitTessellation", LitShaderStripper);
-            stripperFuncs.Add("HDRenderPipeline/TerrainLit", LitShaderStripper);
-            stripperFuncs.Add("Hidden/HDRenderPipeline/TerrainLit_Basemap", LitShaderStripper);
         }
     }
 }

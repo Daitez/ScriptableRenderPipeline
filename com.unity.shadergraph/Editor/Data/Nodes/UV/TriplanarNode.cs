@@ -6,7 +6,7 @@ using UnityEditor.ShaderGraph.Drawing.Controls;
 namespace UnityEditor.ShaderGraph
 {    
     [Title("UV", "Triplanar")]
-    public class TriplanarNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequirePosition, IMayRequireNormal, IMayRequireTangent, IMayRequireBitangent
+    class TriplanarNode : AbstractMaterialNode, IGeneratesBodyCode, IMayRequirePosition, IMayRequireNormal, IMayRequireTangent, IMayRequireBitangent
     {
         public const int OutputSlotId = 0;
         public const int TextureInputId = 1;
@@ -99,6 +99,7 @@ namespace UnityEditor.ShaderGraph
                     sb.AppendLine("{0}3 {1}_Blend = max(pow(abs({2}), {3}), 0);", precision, GetVariableNameForNode(),
                     GetSlotValue(NormalInputId, generationMode), GetSlotValue(BlendInputId, generationMode));
                     sb.AppendLine("{0}_Blend /= ({0}_Blend.x + {0}_Blend.y + {0}_Blend.z ).xxx;", GetVariableNameForNode());
+
                     sb.AppendLine("{0}3 {1}_X = UnpackNormalmapRGorAG(SAMPLE_TEXTURE2D({2}, {3}, {1}_UV.zy));"
                     , precision
                     , GetVariableNameForNode()

@@ -10,6 +10,7 @@
 // This value will not go through any matrix projection convertion
 #define UNITY_RAW_FAR_CLIP_VALUE (1.0)
 #define VERTEXID_SEMANTIC SV_VertexID
+#define INSTANCEID_SEMANTIC SV_InstanceID
 #define FRONT_FACE_SEMANTIC VFACE
 #define FRONT_FACE_TYPE float
 #define IS_FRONT_VFACE(VAL, FRONT, BACK) ((VAL > 0.0) ? (FRONT) : (BACK))
@@ -18,6 +19,8 @@
 
 #define CBUFFER_START(name)
 #define CBUFFER_END
+
+#define PLATFORM_SUPPORTS_EXPLICIT_BINDING 1
 
 // flow control attributes
 #define UNITY_BRANCH        [branch]

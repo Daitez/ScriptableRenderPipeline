@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 using Object = UnityEngine.Object;
-using System.Linq;
+using UnityEditor.Rendering;
 
 namespace UnityEditor.Experimental.Rendering.HDPipeline
 {
@@ -33,7 +33,9 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
 
         protected override void Draw(HDProbeUI s, SerializedHDProbe serialized, Editor owner)
         {
+#pragma warning disable 612 //Draw
             PlanarReflectionProbeUI.Inspector.Draw(s, serialized, owner);
+#pragma warning restore 612
         }
 
         protected override void OnEnable()
@@ -48,6 +50,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         protected override void OnSceneGUI()
         {
             base.OnSceneGUI();
+            PlanarReflectionProbeUI.DrawHandlesOverride(m_UIState as PlanarReflectionProbeUI, m_SerializedHDProbe as SerializedPlanarReflectionProbe, this);
 
             SceneViewOverlay_Window(_.GetContent("Planar Probe"), OnOverlayGUI, -100, target);
         }
@@ -61,12 +64,12 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             var previewSize = new Rect();
             foreach(PlanarReflectionProbe p in m_TypedTargets)
             {
-                if (p.texture == null)
+                if (p.currentTexture == null)
                     continue;
 
-                var factor = k_PreviewHeight / p.texture.height;
+                var factor = k_PreviewHeight / p.currentTexture.height;
 
-                previewSize.x += p.texture.width * factor;
+                previewSize.x += p.currentTexture.width * factor;
                 previewSize.y = k_PreviewHeight;
             }
 
@@ -78,14 +81,14 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 var c = new Rect(cameraRect);
                 foreach(PlanarReflectionProbe p in m_TypedTargets)
                 {
-                    if (p.texture == null)
+                    if (p.currentTexture == null)
                         continue;
 
-                    var factor = k_PreviewHeight / p.texture.height;
+                    var factor = k_PreviewHeight / p.currentTexture.height;
 
-                    c.width = p.texture.width * factor;
+                    c.width = p.currentTexture.width * factor;
                     c.height = k_PreviewHeight;
-                    Graphics.DrawTexture(c, p.texture, new Rect(0, 0, 1, 1), 0, 0, 0, 0, GUI.color, CameraEditorUtils.GUITextureBlit2SRGBMaterial);
+                    Graphics.DrawTexture(c, p.currentTexture, new Rect(0, 0, 1, 1), 0, 0, 0, 0, GUI.color, CameraEditorUtils.GUITextureBlit2SRGBMaterial);
 
                     c.x += c.width;
                 }
@@ -96,7 +99,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         {
             foreach(PlanarReflectionProbe p in m_TypedTargets)
             {
-                if (p.texture != null)
+                if (p.currentTexture != null)
                     return true;
             }
             return false;
@@ -112,7 +115,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             m_PreviewedTextures.Clear();
             foreach (PlanarReflectionProbe p in m_TypedTargets)
             {
-                m_PreviewedTextures.Add(p.texture);
+                m_PreviewedTextures.Add(p.currentTexture);
             }
 
             var space = Vector2.one;

@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine.Experimental.Rendering.HDPipeline;
 
 namespace UnityEditor.Experimental.Rendering.HDPipeline
@@ -6,11 +7,14 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
     {
         internal SerializedObject serializedObject;
         
+        internal SerializedProperty renderDynamicObjects;
+        internal SerializedProperty customBakedTexture;
+
         internal SerializedProperty proxyVolumeReference;
         internal SerializedProperty infiniteProjection;
 
         internal SerializedInfluenceVolume influenceVolume;
-
+        internal SerializedCaptureSettings captureSettings;
         internal SerializedFrameSettings frameSettings;
 
         internal SerializedProperty lightLayers;
@@ -32,9 +36,15 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         internal SerializedHDProbe(SerializedObject serializedObject)
         {
             this.serializedObject = serializedObject;
+            
+            //Find do not support inheritance override:
+            //customBakedTexture will be assigned again in SerializedHDReflectionProbe
+            customBakedTexture = serializedObject.Find((HDProbe p) => p.customTexture);
+            renderDynamicObjects = serializedObject.Find((HDProbe p) => p.renderDynamicObjects);
 
             proxyVolumeReference = serializedObject.Find((HDProbe p) => p.proxyVolume);
             influenceVolume = new SerializedInfluenceVolume(serializedObject.Find((HDProbe p) => p.influenceVolume));
+            captureSettings = new SerializedCaptureSettings(serializedObject.Find((HDProbe p) => p.captureSettings));
             infiniteProjection = serializedObject.Find((HDProbe p) => p.infiniteProjection);
 
             frameSettings = new SerializedFrameSettings(serializedObject.Find((HDProbe p) => p.frameSettings));
@@ -51,6 +61,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         {
             serializedObject.Update();
             //InfluenceVolume does not have Update. Add it here if it have in the future.
+            //CaptureSettings does not have Update. Add it here if it have in the future.
+            //FrameSettings does not have Update. Add it here if it have in the future.
         }
 
         internal virtual void Apply()
