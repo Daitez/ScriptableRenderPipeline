@@ -30,6 +30,12 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
             if (isTransparentBackface && !hdrpAsset.renderPipelineSettings.supportTransparentBackface)
                 return true;
 
+            if (isTransparentPrepass && !hdrpAsset.renderPipelineSettings.supportTransparentDepthPostpass)
+                return true;
+
+            if (isTransparentPostpass && !hdrpAsset.renderPipelineSettings.supportTransparentDepthPostpass)
+                return true;
+
             // When using forward only, we never need GBuffer pass (only Forward)
             if (hdrpAsset.renderPipelineSettings.supportedLitShaderMode == RenderPipelineSettings.SupportedLitShaderMode.ForwardOnly && isGBufferPass)
                 return true;

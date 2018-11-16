@@ -39,6 +39,8 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
         public bool supportLightLayers = false;
         public bool supportDistortion = true;
         public bool supportTransparentBackface = true;
+        public bool supportTransparentDepthPrepass = true;
+        public bool supportTransparentDepthPostpass = true;
         public SupportedLitShaderMode supportedLitShaderMode = SupportedLitShaderMode.Both;
 
         // Engine
