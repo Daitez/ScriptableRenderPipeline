@@ -40,7 +40,7 @@ Shader "Hidden/HDRenderPipeline/OpaqueAtmosphericScattering"
 
 #if defined(UNITY_SINGLE_PASS_STEREO)
             // XRTODO: fixup and consolidate stereo code relying on _PixelCoordToViewDirWS
-            V = normalize(posInput.positionWS);
+            V = -normalize(posInput.positionWS);
 #endif
 
             if (depth == UNITY_RAW_FAR_CLIP_VALUE)
