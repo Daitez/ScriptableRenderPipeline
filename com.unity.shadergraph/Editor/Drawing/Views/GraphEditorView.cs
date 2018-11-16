@@ -187,13 +187,13 @@ namespace UnityEditor.ShaderGraph.Drawing
 
             m_EdgeConnectorListener = new EdgeConnectorListener(m_Graph, m_SearchWindowProvider);
 
-            foreach (var node in graph.GetNodes<INode>())
-                AddNode(node);
-
             foreach (var graphGroup in graph.groups)
             {
                 AddGroup(graphGroup);
             }
+
+            foreach (var node in graph.GetNodes<INode>())
+                AddNode(node);
 
             foreach (var edge in graph.edges)
                 AddEdge(edge);
@@ -399,14 +399,14 @@ namespace UnityEditor.ShaderGraph.Drawing
                 }
             }
 
-            foreach (var node in m_Graph.addedNodes)
-            {
-                AddNode(node);
-            }
-
             foreach (var groupData in m_Graph.addedGroups)
             {
                 AddGroup(groupData);
+            }
+
+            foreach (var node in m_Graph.addedNodes)
+            {
+                AddNode(node);
             }
 
             foreach (var groupChange in m_Graph.nodeGroupChanges)
@@ -429,16 +429,16 @@ namespace UnityEditor.ShaderGraph.Drawing
                 }
             }
 
-            foreach (var node in m_Graph.pastedNodes)
-            {
-                var nodeView = m_GraphView.nodes.ToList().OfType<MaterialNodeView>().FirstOrDefault(p => p.node != null && p.node.guid == node.guid);
-                m_GraphView.AddToSelection(nodeView);
-            }
-
             foreach (var groupData in m_Graph.pastedGroups)
             {
                 var group = m_GraphView.graphElements.ToList().OfType<ShaderGroup>().ToList().First(g => g.userData == groupData);
                 m_GraphView.AddToSelection(group);
+            }
+
+            foreach (var node in m_Graph.pastedNodes)
+            {
+                var nodeView = m_GraphView.nodes.ToList().OfType<MaterialNodeView>().FirstOrDefault(p => p.node != null && p.node.guid == node.guid);
+                m_GraphView.AddToSelection(nodeView);
             }
 
             var nodesToUpdate = m_NodeViewHashSet;
@@ -477,12 +477,15 @@ namespace UnityEditor.ShaderGraph.Drawing
             UpdateEdgeColors(nodesToUpdate);
         }
 
+        List<GraphElement> m_AddNodeGraphElements = new List<GraphElement>();
+
         void AddNode(INode node)
         {
             var nodeView = new MaterialNodeView { userData = node };
 
             m_GraphView.AddElement(nodeView);
-            nodeView.Initialize(node as AbstractMaterialNode, m_PreviewManager, m_EdgeConnectorListener);
+            var materialNode = (AbstractMaterialNode)node;
+            nodeView.Initialize(materialNode, m_PreviewManager, m_EdgeConnectorListener);
             node.RegisterCallback(OnNodeChanged);
 
             nodeView.MarkDirtyRepaint();
@@ -502,6 +505,20 @@ namespace UnityEditor.ShaderGraph.Drawing
                     }
                 }
             }
+
+            m_AddNodeGraphElements.Clear();
+            m_GraphView.graphElements.ToList(m_AddNodeGraphElements);
+
+            if (materialNode.groupGuid != Guid.Empty)
+            {
+                foreach (var element in m_AddNodeGraphElements)
+                {
+                    if (element is ShaderGroup groupView && groupView.userData.guid == materialNode.groupGuid)
+                    {
+                        groupView.AddElement(nodeView);
+                    }
+                }
+            }
         }
 
         void AddGroup(GroupData groupData)
@@ -512,13 +529,6 @@ namespace UnityEditor.ShaderGraph.Drawing
             graphGroup.title = groupData.title;
 
             m_GraphView.AddElement(graphGroup);
-
-            List<MaterialNodeView> allNodesInThisGroup = m_GraphView.nodes.ToList().OfType<MaterialNodeView>().Where(x => x.node.groupGuid == groupData.guid).ToList();
-
-            foreach (MaterialNodeView materialNodeView in allNodesInThisGroup)
-            {
-                graphGroup.AddElement(materialNodeView);
-            }
         }
 
         static void RepositionNode(GeometryChangedEvent evt)
