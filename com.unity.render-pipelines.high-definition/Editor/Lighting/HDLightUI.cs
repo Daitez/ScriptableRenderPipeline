@@ -609,7 +609,8 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
         static bool IsShadowSettings(HDShadowQuality quality, SerializedHDLight serialized, Editor owner)
         {
             // Handle quality where there is nothing to draw directly here
-            if (quality == HDShadowQuality.Medium || quality == HDShadowQuality.Low)
+            // No PCSS for now with directional light
+            if (quality == HDShadowQuality.Medium || quality == HDShadowQuality.Low || serialized.editorLightShape == LightShape.Directional)
                 return false;
 
             // Draw shadow settings using the current shadow algorithm
