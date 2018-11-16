@@ -11,6 +11,7 @@ namespace UnityEditor.Rendering.LWRP
 {
     [Serializable]
     [FormerName("UnityEditor.Experimental.Rendering.LightweightPipeline.LightWeightPBRSubShader")]
+    [FormerName("UnityEditor.ShaderGraph.LightWeightPBRSubShader")]
     class LightWeightPBRSubShader : IPBRSubShader
     {
         static readonly NeededCoordinateSpace k_PixelCoordinateSpace = NeededCoordinateSpace.World;
