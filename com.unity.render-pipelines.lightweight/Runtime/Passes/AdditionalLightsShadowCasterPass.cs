@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.LWRP;
 
-namespace UnityEngine.Rendering.LWRP
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     internal class AdditionalLightsShadowCasterPass : ScriptableRenderPass
     {

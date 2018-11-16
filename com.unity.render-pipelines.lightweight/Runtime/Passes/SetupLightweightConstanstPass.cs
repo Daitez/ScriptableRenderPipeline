@@ -1,8 +1,10 @@
 using System;
 using Unity.Collections;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.LWRP;
 
-namespace UnityEngine.Rendering.LWRP
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     /// <summary>
     /// Configure the shader constants needed by the render pipeline

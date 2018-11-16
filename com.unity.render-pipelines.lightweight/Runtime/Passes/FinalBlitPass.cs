@@ -1,6 +1,8 @@
 using System;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.LWRP;
 
-namespace UnityEngine.Rendering.LWRP
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     /// <summary>
     /// Copy the given color target to the current camera target

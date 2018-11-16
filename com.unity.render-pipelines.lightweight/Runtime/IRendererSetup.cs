@@ -1,4 +1,6 @@
-namespace UnityEngine.Rendering.LWRP
+using UnityEngine.Rendering.LWRP;
+
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     public interface IRendererSetup
     {

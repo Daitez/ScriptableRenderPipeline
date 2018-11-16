@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Collections;
 using UnityEngine.Rendering.PostProcessing;
+using UnityEngine.Rendering.LWRP;
+using UnityEngine.Rendering;
 
-namespace UnityEngine.Rendering.LWRP
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     public sealed class ScriptableRenderer
     {

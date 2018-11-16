@@ -1,5 +1,7 @@
 
-namespace UnityEngine.Rendering.LWRP
+using UnityEngine.Rendering;
+
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     public struct RenderTargetHandle
     {

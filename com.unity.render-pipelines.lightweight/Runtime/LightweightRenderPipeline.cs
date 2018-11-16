@@ -6,6 +6,7 @@ using UnityEditor.Rendering.LWRP;
 #endif
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.Experimental.Rendering.LWRP;
 using Lightmapping = UnityEngine.Experimental.GlobalIllumination.Lightmapping;
 
 namespace UnityEngine.Rendering.LWRP

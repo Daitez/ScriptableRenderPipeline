@@ -1,6 +1,9 @@
 using System;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.LWRP;
 
-namespace UnityEngine.Rendering.LWRP {
+namespace UnityEngine.Experimental.Rendering.LWRP
+{
     /// <summary>
     /// Generate rendering attachments that can be used for rendering.
     ///

@@ -4,6 +4,7 @@ using UnityEditor;
 using UnityEditor.ProjectWindowCallback;
 #endif
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.LWRP;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.LWRP;
 public class CustomLWPipe : MonoBehaviour, IRendererSetup

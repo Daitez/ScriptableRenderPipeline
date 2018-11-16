@@ -1,4 +1,4 @@
-namespace UnityEngine.Rendering.LWRP
+namespace UnityEngine.Experimental.Rendering.LWRP
 {
     public interface IAfterDepthPrePass
     {
