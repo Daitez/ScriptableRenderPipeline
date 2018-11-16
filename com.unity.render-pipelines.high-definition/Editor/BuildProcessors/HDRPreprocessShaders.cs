@@ -172,7 +172,7 @@ namespace UnityEditor.Experimental.Rendering.HDPipeline
                 }
             }
 
-      //      if(hdPipelineAsset.enableVariantStrippingLogging)
+            if(hdPipelineAsset.enableVariantStrippingLog)
             {
                 m_TotalVariantsInputCount += preStrippingCount;
                 m_TotalVariantsOutputCount += (uint)inputData.Count;

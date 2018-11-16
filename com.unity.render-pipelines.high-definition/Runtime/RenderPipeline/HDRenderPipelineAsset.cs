@@ -156,7 +156,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
         public bool allowShaderVariantStripping = true;
         public bool enableSRPBatcher = false;
-        public bool enableVariantStrippingLogging = true;   // TODO_FCC_BEFORE_PR: Expose this somewhere.
+        public bool enableVariantStrippingLog = true;
 
         [SerializeField]
         public DiffusionProfileSettings diffusionProfileSettings;
