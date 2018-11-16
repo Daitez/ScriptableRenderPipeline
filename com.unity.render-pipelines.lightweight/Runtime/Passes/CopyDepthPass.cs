@@ -11,7 +11,7 @@ namespace UnityEngine.Rendering.LWRP
     /// does not have MSAA enabled, the pass uses a Blit or a Copy Texture
     /// operation, depending on what the current platform supports.
     /// </summary>
-    public class CopyDepthPass : ScriptableRenderPass
+    internal class CopyDepthPass : ScriptableRenderPass
     {
         private RenderTargetHandle source { get; set; }
         private RenderTargetHandle destination { get; set; }

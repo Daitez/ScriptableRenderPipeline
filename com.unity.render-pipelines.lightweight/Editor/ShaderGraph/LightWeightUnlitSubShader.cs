@@ -10,7 +10,7 @@ namespace UnityEngine.Rendering.LWRP
 {
     [Serializable]
     [FormerName("UnityEngine.Experimental.Rendering.LightweightPipeline.LightWeightUnlitSubShader")]
-    public class LightWeightUnlitSubShader : IUnlitSubShader
+    class LightWeightUnlitSubShader : IUnlitSubShader
     {
         static readonly NeededCoordinateSpace k_PixelCoordinateSpace = NeededCoordinateSpace.World;
 

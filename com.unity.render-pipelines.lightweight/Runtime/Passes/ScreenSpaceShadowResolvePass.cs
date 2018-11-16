@@ -2,7 +2,7 @@ using System;
 
 namespace UnityEngine.Rendering.LWRP
 {
-    public class ScreenSpaceShadowResolvePass : ScriptableRenderPass
+    internal class ScreenSpaceShadowResolvePass : ScriptableRenderPass
     {
         const string k_CollectShadowsTag = "Collect Shadows";
         RenderTextureFormat m_ColorFormat;

@@ -9,7 +9,7 @@ namespace UnityEngine.Rendering.LWRP
     /// the camera target. The pass takes the screen viewport into
     /// consideration.
     /// </summary>
-    public class FinalBlitPass : ScriptableRenderPass
+    internal class FinalBlitPass : ScriptableRenderPass
     {
         const string k_FinalBlitTag = "Final Blit Pass";
 
@@ -26,22 +26,23 @@ namespace UnityEngine.Rendering.LWRP
             this.colorAttachmentHandle = colorAttachmentHandle;
             this.descriptor = baseDescriptor;
         }
-        
+
         /// <inheritdoc/>
         public override void Execute(ScriptableRenderer renderer, ScriptableRenderContext context, ref RenderingData renderingData)
         {
             if (renderer == null)
-                throw new ArgumentNullException("renderer");
-            
-            Material material = renderingData.cameraData.isStereoEnabled ? null : renderer.GetMaterial(MaterialHandle.Blit);
-            RenderTargetIdentifier sourceRT = colorAttachmentHandle.Identifier();
+                throw new ArgumentNullException(nameof(renderer));
 
             CommandBuffer cmd = CommandBufferPool.Get(k_FinalBlitTag);
-            cmd.SetGlobalTexture("_BlitTex", sourceRT);
 
-            // We need to handle viewport on a RT. We do it by rendering a fullscreen quad + viewport
-            if (!renderingData.cameraData.isDefaultViewport)
+            if (renderingData.cameraData.isStereoEnabled)
             {
+                cmd.Blit(colorAttachmentHandle.Identifier(), BuiltinRenderTextureType.CameraTarget);
+            }
+            else
+            {
+                cmd.SetGlobalTexture("_BlitTex", colorAttachmentHandle.Identifier());
+
                 SetRenderTarget(
                     cmd,
                     BuiltinRenderTextureType.CameraTarget,
@@ -53,11 +54,7 @@ namespace UnityEngine.Rendering.LWRP
 
                 cmd.SetViewProjectionMatrices(Matrix4x4.identity, Matrix4x4.identity);
                 cmd.SetViewport(renderingData.cameraData.camera.pixelRect);
-                ScriptableRenderer.RenderFullscreenQuad(cmd, material);
-            }
-            else
-            {
-                cmd.Blit(colorAttachmentHandle.Identifier(), BuiltinRenderTextureType.CameraTarget, material);
+                ScriptableRenderer.RenderFullscreenQuad(cmd, renderer.GetMaterial(MaterialHandle.Blit));
             }
 
             context.ExecuteCommandBuffer(cmd);

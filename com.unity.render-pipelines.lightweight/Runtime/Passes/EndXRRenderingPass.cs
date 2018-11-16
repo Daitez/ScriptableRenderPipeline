@@ -9,7 +9,7 @@ namespace UnityEngine.Rendering.LWRP
     /// If this pass is issued without a matching BeginXRRenderingPass it will lead to
     /// undefined rendering results. 
     /// </summary>
-    public class EndXRRenderingPass : ScriptableRenderPass
+    internal class EndXRRenderingPass : ScriptableRenderPass
     {
         /// <inheritdoc/>
         public override void Execute(ScriptableRenderer renderer, ScriptableRenderContext context, ref RenderingData renderingData)

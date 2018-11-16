@@ -9,7 +9,7 @@ namespace UnityEngine.Rendering.LWRP
     /// with the pass names LightweightForward or SRPDefaultUnlit. The pass only renders
     /// objects in the rendering queue range of Transparent objects.
     /// </summary>
-    public class RenderTransparentForwardPass : ScriptableRenderPass
+    internal class RenderTransparentForwardPass : ScriptableRenderPass
     {
         const string k_RenderTransparentsTag = "Render Transparents";
 

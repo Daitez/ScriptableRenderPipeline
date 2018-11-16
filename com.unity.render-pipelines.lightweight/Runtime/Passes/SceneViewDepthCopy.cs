@@ -2,7 +2,7 @@ using System;
 
 namespace UnityEngine.Rendering.LWRP
 {
-    public class SceneViewDepthCopyPass : ScriptableRenderPass
+    internal class SceneViewDepthCopyPass : ScriptableRenderPass
     {
         const string k_CopyDepthToCameraTag = "Copy Depth to Camera";
 

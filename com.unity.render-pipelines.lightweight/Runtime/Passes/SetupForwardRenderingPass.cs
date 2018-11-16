@@ -14,7 +14,7 @@ namespace UnityEngine.Rendering.LWRP
     /// * Setup HDR keyword
     /// * Setup global time properties (_Time, _SinTime, _CosTime)
     /// </summary>
-    public class SetupForwardRenderingPass : ScriptableRenderPass
+    internal class SetupForwardRenderingPass : ScriptableRenderPass
     {
         /// <inheritdoc/>
         public override void Execute(ScriptableRenderer renderer, ScriptableRenderContext context, ref RenderingData renderingData)

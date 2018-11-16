@@ -7,7 +7,7 @@ namespace UnityEngine.Rendering.LWRP
     ///
     /// This pass renders the standard Unity skybox.
     /// </summary>
-    public class DrawSkyboxPass : ScriptableRenderPass
+    internal class DrawSkyboxPass : ScriptableRenderPass
     {
         private RenderTargetHandle colorAttachmentHandle { get; set; }
         private RenderTargetHandle depthAttachmentHandle { get; set; }

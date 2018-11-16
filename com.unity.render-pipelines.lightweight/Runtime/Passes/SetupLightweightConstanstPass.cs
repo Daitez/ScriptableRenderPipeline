@@ -11,7 +11,7 @@ namespace UnityEngine.Rendering.LWRP
     /// For example, you can execute this pass before you render opaque
     /// objects, to make sure that lights are configured correctly.
     /// </summary>
-    public class SetupLightweightConstanstPass : ScriptableRenderPass
+    internal class SetupLightweightConstanstPass : ScriptableRenderPass
     {
         static class LightConstantBuffer
         {
