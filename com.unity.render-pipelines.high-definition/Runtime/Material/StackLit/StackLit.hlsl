@@ -3520,6 +3520,9 @@ IndirectLighting EvaluateBSDF_Env(  LightLoopContext lightLoopContext,
         return lighting;
 #endif
 
+    if (!_EnableSSRefraction && GPUImageBasedLightingType == GPUIMAGEBASEDLIGHTINGTYPE_REFRACTION)
+        return lighting;
+
     float3 envLighting = float3(0.0, 0.0, 0.0);
     float3 positionWS = posInput.positionWS;
     float weight = 0.0;

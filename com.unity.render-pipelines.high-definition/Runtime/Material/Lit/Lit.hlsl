@@ -434,9 +434,13 @@ BSDFData ConvertSurfaceDataToBSDFData(uint2 positionSS, SurfaceData surfaceData)
     ConvertAnisotropyToRoughness(bsdfData.perceptualRoughness, bsdfData.anisotropy, bsdfData.roughnessT, bsdfData.roughnessB);
 
 #if HAS_REFRACTION
-    // Note: Reuse thickness of transmission's property set
-    FillMaterialTransparencyData( surfaceData.baseColor, surfaceData.metallic, surfaceData.ior, surfaceData.transmittanceColor, surfaceData.atDistance,
-                                    surfaceData.thickness, surfaceData.transmittanceMask, bsdfData);
+    if (_EnableSSRefraction)
+    {
+        // Note: Reuse thickness of transmission's property set
+        FillMaterialTransparencyData(surfaceData.baseColor, surfaceData.metallic, surfaceData.ior, surfaceData.transmittanceColor, surfaceData.atDistance,
+            surfaceData.thickness, surfaceData.transmittanceMask, bsdfData);
+
+    }
 #endif
 
     ApplyDebugToBSDFData(bsdfData);
@@ -1560,7 +1564,6 @@ IndirectLighting EvaluateBSDF_ScreenspaceRefraction(LightLoopContext lightLoopCo
     ZERO_INITIALIZE(IndirectLighting, lighting);
 
 #if HAS_REFRACTION
-
     // Refraction process:
     //  1. Depending on the shape model, we calculate the refracted point in world space and the optical depth
     //  2. We calculate the screen space position of the refracted point
@@ -1666,7 +1669,7 @@ IndirectLighting EvaluateBSDF_Env(  LightLoopContext lightLoopContext,
     float3 R = preLightData.iblR;
 
 #if HAS_REFRACTION
-    if (GPUImageBasedLightingType == GPUIMAGEBASEDLIGHTINGTYPE_REFRACTION)
+    if (GPUImageBasedLightingType == GPUIMAGEBASEDLIGHTINGTYPE_REFRACTION && _EnableSSRefraction)
     {
         positionWS = preLightData.transparentPositionWS;
         R = preLightData.transparentRefractV;
@@ -1735,7 +1738,7 @@ IndirectLighting EvaluateBSDF_Env(  LightLoopContext lightLoopContext,
         }
     }
 #if HAS_REFRACTION
-    else
+    else if(_EnableSSRefraction)
     {
         // No clear coat support with refraction
 
@@ -1753,7 +1756,7 @@ IndirectLighting EvaluateBSDF_Env(  LightLoopContext lightLoopContext,
     if (GPUImageBasedLightingType == GPUIMAGEBASEDLIGHTINGTYPE_REFLECTION)
         lighting.specularReflected = envLighting;
 #if HAS_REFRACTION
-    else
+    else if(_EnableSSRefraction)
         lighting.specularTransmitted = envLighting * preLightData.transparentTransmittance;
 #endif
 
@@ -1793,7 +1796,10 @@ void PostEvaluateBSDF(  LightLoopContext lightLoopContext,
     // since we know it won't be further processed: it is called at the end of the LightLoop(), but doing this
     // enables opacity to affect it (in ApplyBlendMode()) while the rest of specularLighting escapes it.
 #if HAS_REFRACTION
-    diffuseLighting = lerp(diffuseLighting, lighting.indirect.specularTransmitted, bsdfData.transmittanceMask);
+    if (_EnableSSRefraction)
+    {
+        diffuseLighting = lerp(diffuseLighting, lighting.indirect.specularTransmitted, bsdfData.transmittanceMask);
+    }
 #endif
 
     specularLighting = lighting.direct.specular + lighting.indirect.specularReflected;

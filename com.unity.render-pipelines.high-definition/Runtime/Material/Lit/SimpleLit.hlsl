@@ -54,13 +54,16 @@ PreLightData SimpleGetPreLightData(float3 V, PositionInputs posInput, inout BSDF
     preLightData.ltcTransformCoat = 0.0;
 
 #if HAS_REFRACTION
-    RefractionModelResult refraction = REFRACTION_MODEL(V, posInput, bsdfData);
-    preLightData.transparentRefractV = refraction.rayWS;
-    preLightData.transparentPositionWS = refraction.positionWS;
-    preLightData.transparentTransmittance = exp(-bsdfData.absorptionCoefficient * refraction.dist);
-    // Empirical remap to try to match a bit the refraction probe blurring for the fallback
-    // Use IblPerceptualRoughness so we can handle approx of clear coat.
-    preLightData.transparentSSMipLevel = PositivePow(preLightData.iblPerceptualRoughness, 1.3) * uint(max(_ColorPyramidScale.z - 1, 0));
+    if (_EnableSSRefraction)
+    {
+        RefractionModelResult refraction = REFRACTION_MODEL(V, posInput, bsdfData);
+        preLightData.transparentRefractV = refraction.rayWS;
+        preLightData.transparentPositionWS = refraction.positionWS;
+        preLightData.transparentTransmittance = exp(-bsdfData.absorptionCoefficient * refraction.dist);
+        // Empirical remap to try to match a bit the refraction probe blurring for the fallback
+        // Use IblPerceptualRoughness so we can handle approx of clear coat.
+        preLightData.transparentSSMipLevel = PositivePow(preLightData.iblPerceptualRoughness, 1.3) * uint(max(_ColorPyramidScale.z - 1, 0));
+    }
 #endif
 
     return preLightData;
