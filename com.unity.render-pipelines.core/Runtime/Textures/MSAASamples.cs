@@ -1,4 +1,7 @@
-namespace UnityEngine.Rendering
+using System.Collections.Generic;
+using UnityEngine.Rendering;
+
+namespace UnityEngine.Experimental.Rendering
 {
     public enum MSAASamples
     {

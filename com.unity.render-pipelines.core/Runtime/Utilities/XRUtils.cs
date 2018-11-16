@@ -1,4 +1,6 @@
-namespace UnityEngine.Rendering
+using UnityEngine.Rendering;
+
+namespace UnityEngine.Experimental.Rendering
 {
     public static class XRUtils
     {
