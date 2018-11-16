@@ -5,7 +5,8 @@ using System.Linq;
 using UnityEditor.Graphing;
 using UnityEditor.ShaderGraph;
 using UnityEngine.Rendering;
-
+using UnityEngine.Rendering.LWRP;
+    
 namespace UnityEditor.Rendering.LWRP
 {
     [Serializable]
