@@ -120,7 +120,7 @@ namespace UnityEngine.Rendering.LWRP
                 // Advanced settings
                 cache.supportsDynamicBatching = asset.supportsDynamicBatching;
                 cache.mixedLightingSupported = asset.supportsMixedLighting;
-                cache.rendererSetup = new DefaultRendererSetup();
+                cache.rendererSetup = new ForwardRendererSetup();
                 
                 return cache;
             }
