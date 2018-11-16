@@ -26,7 +26,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             Camera camera = renderingData.cameraData.camera;
 
             if (Handles.ShouldRenderGizmos())
-                context.DrawGizmos(camera, this.renderLitGizmos);
+                context.DrawGizmos(camera, this.renderLitGizmos ? GizmoSubset.PreImageEffects : GizmoSubset.PostImageEffects);
 #endif
         }
     }

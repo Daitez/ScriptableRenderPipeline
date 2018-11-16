@@ -1317,9 +1317,10 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
                         // Second resolve the color buffer for finishing the frame
                         m_SharedRTManager.ResolveMSAAColor(cmd, hdCamera, m_CameraColorMSAABuffer, m_CameraColorBuffer);
+
 #if UNITY_EDITOR
                         // Render gizmos that should be affected by post processes
-                        RenderGizmos(cmd, camera, renderContext, true);
+                        RenderGizmos(cmd, camera, renderContext, GizmoSubset.PreImageEffects);
 #endif
 
                         // Render All forward error
@@ -1406,7 +1407,7 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
                     cmd.SetViewport(new Rect(0.0f, 0.0f, hdCamera.actualWidth, hdCamera.actualHeight));
 
                     // Render overlay Gizmos
-                    RenderGizmos(cmd, camera, renderContext, false);
+                    RenderGizmos(cmd, camera, renderContext, GizmoSubset.PostImageEffects);
 #endif
                 }
 
@@ -1418,21 +1419,21 @@ namespace UnityEngine.Experimental.Rendering.HDPipeline
 
             } // For each camera
         }
-#if UNITY_EDITOR
-#endif
 
-        void RenderGizmos(CommandBuffer cmd, Camera camera, ScriptableRenderContext renderContext, bool renderPrePostprocessGizmos)
+        void RenderGizmos(CommandBuffer cmd, Camera camera, ScriptableRenderContext renderContext, GizmoSubset gizmoSubset)
         {
 #if UNITY_EDITOR
             if (UnityEditor.Handles.ShouldRenderGizmos())
             {
+                bool renderPrePostprocessGizmos = (gizmoSubset == GizmoSubset.PreImageEffects);
+
                 using (new ProfilingSample(cmd, 
                     renderPrePostprocessGizmos ? "PrePostprocessGizmos" : "Gizmos", 
                     renderPrePostprocessGizmos ? CustomSamplerId.GizmosPrePostprocess.GetSampler() : CustomSamplerId.Gizmos.GetSampler()))
                 {
                     renderContext.ExecuteCommandBuffer(cmd);
                     cmd.Clear();
-                    renderContext.DrawGizmos(camera, renderPrePostprocessGizmos);
+                    renderContext.DrawGizmos(camera, gizmoSubset);
                 }
             }
 #endif

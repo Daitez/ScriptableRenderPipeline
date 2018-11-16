@@ -227,9 +227,6 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             context.ExecuteCommandBuffer(cmd);
             CommandBufferPool.Release(cmd);
             context.Submit();
-#if UNITY_EDITOR
-            Handles.DrawGizmos(camera);
-#endif
         }
 
         static void SetSupportedRenderingFeatures()

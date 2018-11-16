@@ -237,16 +237,16 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
                 renderer.EnqueuePass(m_CopyColorPass);
             }
 
-#if UNITY_EDITOR
-            m_LitGizmoRenderingPass.Setup(true);
-            renderer.EnqueuePass(m_LitGizmoRenderingPass);
-#endif
-
             m_RenderTransparentForwardPass.Setup(baseDescriptor, colorHandle, depthHandle, rendererConfiguration);
             renderer.EnqueuePass(m_RenderTransparentForwardPass);
 
             foreach (var pass in m_AfterTransparentPasses)
                 renderer.EnqueuePass(pass.GetPassToEnqueue(baseDescriptor, colorHandle, depthHandle));
+
+#if UNITY_EDITOR
+            m_LitGizmoRenderingPass.Setup(true);
+            renderer.EnqueuePass(m_LitGizmoRenderingPass);
+#endif
 
             bool afterRenderExists = m_AfterRenderPasses.Count != 0;
 
