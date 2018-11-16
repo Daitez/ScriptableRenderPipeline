@@ -121,13 +121,6 @@ namespace UnityEngine.Rendering.LWRP
         [SerializeField] LightweightRenderPipelineResources m_ResourcesAsset = null;
         [SerializeField] ShaderVariantLogLevel m_ShaderVariantLogLevel = ShaderVariantLogLevel.Disabled;
 
-        [SerializeField] private LightweightRendererSetup m_RendererSetup = null;
-
-        public IRendererSetup rendererSetup
-        {
-            get { return m_RendererSetup; }
-        }
-        
 #if UNITY_EDITOR
         [NonSerialized]
         LightweightRenderPipelineEditorResources m_EditorResourcesAsset;
